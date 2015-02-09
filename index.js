@@ -18,7 +18,6 @@ if(typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
     var Request = superagent.Request;
 
     Request.prototype.jsonp = jsonp;
-    Request.prototype.end = end;
 
     return superagent;
   };
@@ -26,7 +25,11 @@ if(typeof module !== 'undefined' && typeof module.exports !== 'undefined'){
   window.superagentJSONP = jsonp;
 }
 
-var jsonp = function(options){
+var jsonp = function(options, callback){
+	if (arguments.length == 1) {
+		callback = options;
+		options = null;
+	}
 	var options = options || {};
 	this.options = _.defaults(options, { callbackName : 'cb' });
 	this.callbackName = 'superagentCallback' + new Date().valueOf() + parseInt(Math.random() * 1000);
@@ -36,7 +39,7 @@ var jsonp = function(options){
 		this.callback.apply(this, [data]);
 	}.bind(this);
 
-	return this;
+	end.call(this, callback);
 };
 
 var end = function(callback){
