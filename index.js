@@ -36,7 +36,7 @@ var jsonp = function(options, callback){
 
 
 	window[this.callbackName] = function(data){
-		this.callback.apply(this, [data]);
+		this.callback.apply(this, [null, data]);
 	}.bind(this);
 
 	end.call(this, callback);
@@ -52,6 +52,9 @@ var end = function(callback){
 	var url = this.url + '?' + queryString;
 
 	s.src = url;
+	s.onerror = function(error) {
+		this.callback(error || ('jsonp error: ' + url));
+	};
 
 	document.getElementsByTagName('head')[0].appendChild(s);
 };
